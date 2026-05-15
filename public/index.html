@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Portfolio Return Visualizer</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <h1 class="logo">
+          <span class="logo-dot"></span>Portfolio
+        </h1>
+
+        <section class="panel">
+          <div class="panel-header">
+            <label class="panel-label">Saved portfolios</label>
+            <button id="saveBtn" class="ghost-btn">+ Save current</button>
+          </div>
+          <div id="saved" class="saved empty">
+            <div class="empty-state">No saved portfolios.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <label class="panel-label">Add a holding</label>
+          <div class="search-wrap">
+            <input
+              id="search"
+              class="search"
+              type="text"
+              placeholder="Search ticker or name (e.g. AAPL)"
+              autocomplete="off"
+            />
+            <div id="suggestions" class="suggestions hidden"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <label class="panel-label">Holdings</label>
+            <div class="preset-wrap">
+              <select id="presets" class="preset-select" aria-label="Weight presets">
+                <option value="custom">Custom</option>
+                <option value="equal" selected>Equal weight</option>
+                <option value="equalGroup">Equal by group</option>
+                <option value="6040">60 / 40 split</option>
+                <option value="8020">80 / 20 split</option>
+                <option value="reverse">Reverse order</option>
+              </select>
+            </div>
+          </div>
+          <div id="holdings" class="holdings empty">
+            <div class="empty-state">No holdings yet — search above.</div>
+          </div>
+          <div class="weight-summary">
+            <span>Total weight</span>
+            <span id="totalWeight">0%</span>
+          </div>
+        </section>
+
+        <section class="panel stats">
+          <div class="stat">
+            <span class="stat-label">Total return</span>
+            <span id="statReturn" class="stat-value">—</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Annualized</span>
+            <span id="statAnnual" class="stat-value">—</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Max drawdown</span>
+            <span id="statDrawdown" class="stat-value">—</span>
+          </div>
+        </section>
+      </aside>
+
+      <main class="main">
+        <header class="main-header">
+          <div>
+            <h2 class="main-title">Portfolio performance</h2>
+            <p id="mainSubtitle" class="main-subtitle">
+              Build a portfolio to see returns
+            </p>
+          </div>
+          <div class="ranges" id="ranges">
+            <button data-range="1w">1W</button>
+            <button data-range="1mo">1M</button>
+            <button data-range="3mo">3M</button>
+            <button data-range="6mo">6M</button>
+            <button data-range="1y" class="active">1Y</button>
+            <button data-range="2y">2Y</button>
+            <button data-range="5y">5Y</button>
+            <button data-range="max">MAX</button>
+          </div>
+        </header>
+
+        <div class="chart-card">
+          <div class="chart-headline">
+            <div>
+              <div id="chartReturn" class="chart-return">—</div>
+              <div id="chartReturnSub" class="chart-return-sub">
+                Add holdings to begin
+              </div>
+            </div>
+            <div class="legend" id="legend"></div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart"></canvas>
+            <div id="chartEmpty" class="chart-empty">
+              Your portfolio chart will appear here.
+            </div>
+            <div id="chartLoading" class="chart-loading hidden">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

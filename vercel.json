@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/portfolios/:id", "destination": "/api/portfolios/[id]" }
+  ]
+}
