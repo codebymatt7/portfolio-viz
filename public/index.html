@@ -24,6 +24,31 @@
           <span class="logo-dot"></span>Portfolio
         </h1>
 
+        <section class="panel auth-panel">
+          <div id="authSignedOut" class="auth-signed-out">
+            <button id="signInBtn" class="auth-cta">Sign in to sync</button>
+            <form id="signInForm" class="auth-form hidden">
+              <input
+                type="email"
+                id="emailInput"
+                class="auth-email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              />
+              <button type="submit" class="auth-submit">Send link</button>
+            </form>
+            <div id="authMessage" class="auth-message hidden"></div>
+          </div>
+          <div id="authSignedIn" class="auth-signed-in hidden">
+            <div class="auth-user">
+              <span class="auth-user-dot"></span>
+              <span id="authEmail" class="auth-user-email"></span>
+            </div>
+            <button id="signOutBtn" class="ghost-btn">Sign out</button>
+          </div>
+        </section>
+
         <section class="panel">
           <div class="panel-header">
             <label class="panel-label">Saved portfolios</label>

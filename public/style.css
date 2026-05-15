@@ -240,6 +240,131 @@ input {
   letter-spacing: 0.05em;
 }
 
+/* Auth panel */
+.auth-panel {
+  padding: 12px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  gap: 8px;
+}
+
+.auth-signed-out {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-cta {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.18), rgba(0, 212, 255, 0.12));
+  border: 1px solid rgba(124, 92, 255, 0.35);
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.auth-cta:hover {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.28), rgba(0, 212, 255, 0.18));
+}
+
+.auth-form {
+  display: flex;
+  gap: 6px;
+}
+
+.auth-form.hidden {
+  display: none;
+}
+
+.auth-email {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 8px 10px;
+  outline: none;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.auth-email:focus {
+  border-color: var(--accent);
+}
+
+.auth-submit {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: filter 0.15s;
+}
+
+.auth-submit:hover {
+  filter: brightness(1.1);
+}
+
+.auth-message {
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 6px 2px 0 2px;
+  line-height: 1.4;
+}
+
+.auth-message.hidden {
+  display: none;
+}
+
+.auth-message.error {
+  color: var(--neg);
+}
+
+.auth-message.success {
+  color: var(--pos);
+}
+
+.auth-signed-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.auth-signed-in.hidden {
+  display: none;
+}
+
+.auth-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.auth-user-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pos);
+  flex-shrink: 0;
+}
+
+.auth-user-email {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Saved portfolios */
 .saved {
   display: flex;

@@ -10,13 +10,14 @@ const COLORS = [
 ];
 
 const state = {
-  holdings: [], // { symbol, name, weight, color, visible }
+  holdings: [], // { symbol, name, weight, color, visible, group }
   range: '1y',
   cache: {}, // `${symbol}|${range}` -> points
   searchSeq: 0,
   loadSeq: 0,
   saved: [], // [{ id, name, holdings, savedAt }]
   activeId: null,
+  user: null, // { email } when signed in
 };
 
 
@@ -28,6 +29,14 @@ const els = {
   presets: document.getElementById('presets'),
   saveBtn: document.getElementById('saveBtn'),
   saved: document.getElementById('saved'),
+  authSignedOut: document.getElementById('authSignedOut'),
+  authSignedIn: document.getElementById('authSignedIn'),
+  signInBtn: document.getElementById('signInBtn'),
+  signOutBtn: document.getElementById('signOutBtn'),
+  signInForm: document.getElementById('signInForm'),
+  emailInput: document.getElementById('emailInput'),
+  authMessage: document.getElementById('authMessage'),
+  authEmail: document.getElementById('authEmail'),
   ranges: document.getElementById('ranges'),
   chartCanvas: document.getElementById('chart'),
   chartEmpty: document.getElementById('chartEmpty'),
@@ -599,6 +608,88 @@ function showLoading(on) {
   els.chartLoading.classList.toggle('hidden', !on);
 }
 
+/* --- Auth ----------------------------------------------------------- */
+async function fetchUser() {
+  try {
+    const r = await fetch('/api/auth/me');
+    if (!r.ok) throw new Error('me failed');
+    const data = await r.json();
+    state.user = data.user;
+  } catch {
+    state.user = null;
+  }
+  renderAuth();
+}
+
+function renderAuth() {
+  if (state.user) {
+    els.authSignedOut.classList.add('hidden');
+    els.authSignedIn.classList.remove('hidden');
+    els.authEmail.textContent = state.user.email;
+  } else {
+    els.authSignedOut.classList.remove('hidden');
+    els.authSignedIn.classList.add('hidden');
+  }
+}
+
+function setAuthMessage(text, kind) {
+  els.authMessage.textContent = text || '';
+  els.authMessage.classList.toggle('hidden', !text);
+  els.authMessage.classList.toggle('error', kind === 'error');
+  els.authMessage.classList.toggle('success', kind === 'success');
+}
+
+els.signInBtn.addEventListener('click', () => {
+  els.signInBtn.classList.add('hidden');
+  els.signInForm.classList.remove('hidden');
+  els.emailInput.focus();
+});
+
+els.signInForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = els.emailInput.value.trim();
+  if (!email) return;
+  setAuthMessage('Sending…', null);
+  try {
+    const r = await fetch('/api/auth/request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      throw new Error(data.error || 'request failed');
+    }
+    const data = await r.json();
+    if (data.dev) {
+      setAuthMessage(
+        'Dev mode: no email provider configured — check the server logs for your link.',
+        'success'
+      );
+    } else {
+      setAuthMessage(`Check ${email} for a sign-in link.`, 'success');
+    }
+  } catch (err) {
+    setAuthMessage(err.message || 'Failed to send.', 'error');
+  }
+});
+
+els.signOutBtn.addEventListener('click', async () => {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } catch {}
+  state.user = null;
+  state.saved = [];
+  state.activeId = null;
+  renderAuth();
+  renderSaved();
+});
+
+// If verify just redirected back with ?signed_in=1, drop it from URL.
+if (new URLSearchParams(window.location.search).has('signed_in')) {
+  history.replaceState({}, '', window.location.pathname);
+}
+
 /* --- Saved portfolios (server-backed, localStorage fallback) -------- */
 const LS_KEY = 'portfolioViz.portfolios.v1';
 let useLocalFallback = false;
@@ -618,6 +709,12 @@ function writeLocal() {
 }
 
 async function fetchPortfolios() {
+  // Only hit the server when signed in. Otherwise localStorage is the source.
+  if (!state.user) {
+    useLocalFallback = true;
+    state.saved = readLocal();
+    return;
+  }
   try {
     const r = await fetch('/api/portfolios');
     if (!r.ok) throw new Error('failed');
@@ -625,7 +722,7 @@ async function fetchPortfolios() {
     state.saved = data.portfolios || [];
     useLocalFallback = false;
   } catch (e) {
-    console.warn('portfolio API unavailable, using localStorage', e);
+    console.warn('portfolio API failed, using localStorage', e);
     useLocalFallback = true;
     state.saved = readLocal();
   }
@@ -803,6 +900,7 @@ els.saveBtn.addEventListener('click', saveCurrentPortfolio);
 
 /* --- Boot ----------------------------------------------------------- */
 (async function boot() {
+  await fetchUser();
   await fetchPortfolios();
   renderSaved();
   state.holdings = [
